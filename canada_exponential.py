@@ -4,6 +4,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sklearn.metrics as metrics
 
+fig, ax = plt.subplots()
+
 data = pd.read_csv('em_gdp.csv')
 data = data[data['country'] == 'Canada']
 
@@ -27,9 +29,13 @@ print("MSE:", mse)
 rmse = math.sqrt(mse)
 print("RMSE:", rmse)
 
-plt.plot(x, y)
-plt.plot(x, predicted_y, color='red')
+ax.plot(x, y)
+ax.set_ylabel('GDP')
+ax.set_xlabel('Year', color='blue')
+
+ax2 = ax.twinx()
+ax2.plot(x, predicted_y, color='red')
+ax2.set_ylabel('Predicted GDP')
+
 plt.title('Canada Exponential Model')
-plt.xlabel('Year')
-plt.ylabel('GDP')
 plt.show()
