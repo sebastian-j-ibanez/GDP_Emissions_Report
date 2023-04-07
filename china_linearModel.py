@@ -1,7 +1,9 @@
+import math
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
+from sklearn import metrics
 
 #Emissions
 data = pd.read_csv('em_gdp.csv')
@@ -24,6 +26,16 @@ z_line = np.polyval([z_m, z_b], x)
 zchange = z.pct_change()
 zchange = zchange.fillna(0)
 zmean = zchange.mean()
+
+emissions_mse = metrics.mean_squared_error(y, y_line)
+print("Emissiosn MSE:", emissions_mse)
+emissions_rmse = math.sqrt(emissions_mse)
+print("Emissions RMSE:", emissions_rmse)
+
+gdp_mse = metrics.mean_squared_error(z, z_line)
+print("GDP MSE:", gdp_mse)
+gdp_rmse = math.sqrt(gdp_mse)
+print("GDP RMSE:", gdp_rmse)
 
 #Predict
 plt.subplot(2, 1, 1)
