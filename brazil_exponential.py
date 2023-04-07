@@ -1,53 +1,54 @@
+import math
 import pandas as pd
-import seaborn as sns
+import numpy as np
 import matplotlib.pyplot as plt
+import sklearn.metrics as metrics
 
-sns.set(style="white", color_codes=True)
-
-#Emissions
 data = pd.read_csv('em_gdp.csv')
-
-#Get only Brazil's data
 data = data[data['country'] == 'Brazil']
-plt.plot(data['year'], data['emissions'], color='red')
 
-#Data all from 1960-2020
-data = data[data['year'] <= 2020]
+x = data['year'].to_numpy()
+y = data['emissions'].to_numpy()
+z = data['gdp'].to_numpy()
 
-#Only use year, gdp, and emissions columns
-data = data[['year','gdp','emissions']]
+log_y = np.log(y)
+log_z = np.log(z)
 
-yearly_change_em = pd.DataFrame()
-yearly_change_em['year'] = data['year']
-yearly_change_em['pct_em'] = data['emissions'].pct_change()
+curve_fit = np.polyfit(x, log_y, 1)
+curve_fit_x = round(curve_fit[0], 3)
+curve_fit_y = round(curve_fit[1], 3)
+predicted_y = np.exp(curve_fit_y) * np.exp(curve_fit_x * x)
 
-yearly_change_gdp = pd.DataFrame()
-yearly_change_gdp['year'] = data['year']
-yearly_change_gdp['pct_gdp'] = data['gdp'].pct_change()
+curve_fit = np.polyfit(x, log_z, 1)
+curve_fit_x = round(curve_fit[0], 3)
+curve_fit_z = round(curve_fit[1], 3)
+predicted_z = np.exp(curve_fit_z) * np.exp(curve_fit_x * x)
 
-avg_chng_gdp = yearly_change_gdp['pct_gdp'].mean()
-avg_chng_em = yearly_change_em['pct_em'].mean()
+emissions_mse = metrics.mean_squared_error(y, predicted_y)
+print("Emissiosn MSE:", emissions_mse)
+emissions_rmse = math.sqrt(emissions_mse)
+print("Emissions RMSE:", emissions_rmse)
 
-#Predict
-predicted_em = pd.DataFrame()
-predicted_em_years = [1981, 1982, 1983, 1984, 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020]
-predicted_em_values = []
-# emissions * (1 + yearly average emissions change) 10,000 * (1 + 0.05)
+gdp_mse = metrics.mean_squared_error(z, predicted_z)
+print("GDP MSE:", gdp_mse)
+gdp_rmse = math.sqrt(gdp_mse)
+print("GDP RMSE:", gdp_rmse)
 
+plt.subplot(2, 1, 1)
+plt.plot(x, y, color='#ff595e')
+plt.plot(x, predicted_y, color='#ffb703', linestyle='--')
+plt.title('China\'s Emissions - Exponential Predicted Model')
+plt.legend(['Actual', 'Predicted'])
+plt.xlabel('Year')
+plt.ylabel('Emissions')
 
-temp = data[data['year'] == 1981]
-temp2 = temp['emissions']
-emissions = temp2.iloc[0]
+plt.subplots_adjust(hspace=0.75)
+plt.subplot(2, 1, 2)
+plt.plot(x, z, color='#8ac926')
+plt.plot(x, predicted_z, color='#ffb703', linestyle='--')
+plt.title('China\'s GDP - Exponential Predicted Model')
+plt.legend(['Actual', 'Predicted'])
+plt.xlabel('Year')
+plt.ylabel('GDP')
 
-for x in predicted_em_years:
-    em = emissions * (1 + avg_chng_em)
-    emissions = em
-    predicted_em_values.append(em)
-
-plt.plot(predicted_em_years, predicted_em_values, color='green')
-
-plt.title('Brazil Emissions Nonlinear Model')
-plt.legend(['Emissions', 'Predicted Emissions'])
-plt.xlabel('Year', labelpad=10)
-plt.ylabel('Emissions (Million Metric Tons)', labelpad=10)
 plt.show()

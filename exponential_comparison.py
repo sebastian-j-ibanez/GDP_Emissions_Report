@@ -1,51 +1,36 @@
+import math
 import pandas as pd
-import seaborn as sns
+import numpy as np
 import matplotlib.pyplot as plt
+import sklearn.metrics as metrics
 
-sns.set(style="white", color_codes=True)
-
-# Read data from CSV file
 data = pd.read_csv('em_gdp.csv')
+data = data[data['country'] == 'Canada']
 
-# Select data only for China, India, and the United States
-countries = ['China', 'India', 'United States']
-data = data[data['country'].isin(countries)]
+x = data['year'].to_numpy()
+y = data['emissions'].to_numpy()
+z = data['gdp'].to_numpy()
 
-# Plot emissions data for each country
-g = sns.FacetGrid(data, col="country", col_wrap=3)
-g.map(plt.plot, "year", "emissions", marker=".")
+log_y = np.log(y)
+log_z = np.log(z)
 
-# Select data for years 1960-2020
-data = data[data['year'] <= 2020]
+curve_fit = np.polyfit(x, log_y, 1)
+curve_fit_x = round(curve_fit[0], 3)
+curve_fit_y = round(curve_fit[1], 3)
+predicted_y = np.exp(curve_fit_y) * np.exp(curve_fit_x * x)
 
-# Select only year, gdp, and emissions columns
-data = data[['year', 'gdp', 'emissions']]
+curve_fit = np.polyfit(x, log_z, 1)
+curve_fit_x = round(curve_fit[0], 3)
+curve_fit_z = round(curve_fit[1], 3)
+predicted_z = np.exp(curve_fit_z) * np.exp(curve_fit_x * x)
 
-# Calculate average yearly percentage change in emissions and GDP
-yearly_change_em = pd.DataFrame()
-yearly_change_em['year'] = data['year']
-yearly_change_em['pct_em'] = data['emissions'].pct_change()
+canada_emissions_mse = metrics.mean_squared_error(y, predicted_y)
+print("Emissiosn MSE:", canada_emissions_mse)
 
-yearly_change_gdp = pd.DataFrame()
-yearly_change_gdp['year'] = data['year']
-yearly_change_gdp['pct_gdp'] = data['gdp'].pct_change()
+canada_gdp_mse = metrics.mean_squared_error(z, predicted_z)
+print("GDP MSE:", canada_gdp_mse)
 
-avg_chng_gdp = yearly_change_gdp['pct_gdp'].mean()
-avg_chng_em = yearly_change_em['pct_em'].mean()
+df = pd.DataFrame({})
 
-# Predict emissions for each country
-predicted_em = pd.DataFrame()
-predicted_em_years = list(range(1960, 2021))
-for country in countries:
-    country_data = data[data['country'] == country]
-    emissions = country_data['emissions'].iloc[0]
-    predicted_em_values = []
-    for year in predicted_em_years:
-        em = emissions * (1 + avg_chng_em)
-        emissions = em
-        predicted_em_values.append(em)
-    predicted_em[country] = predicted_em_values
-
-# Compare means of predicted emissions for each country
-predicted_em_means = predicted_em.mean()
-print(predicted_em_means)
+plt.bar(x, y, color='#ff595e')
+plt.show()
