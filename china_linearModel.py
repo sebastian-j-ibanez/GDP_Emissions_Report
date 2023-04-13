@@ -1,6 +1,5 @@
 import math
 import pandas as pd
-import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn import metrics
@@ -44,7 +43,7 @@ plt.plot(x, y_line, color='#ffb703', linestyle='--')
 plt.title('China\'s Emissions - Linear Predicted Model')
 plt.legend(['Actual', 'Predicted'])
 plt.xlabel('Year')
-plt.ylabel('Emissions')
+plt.ylabel('Emissions (Megatons)')
 
 plt.subplots_adjust(hspace=0.75)
 plt.subplot(2, 1, 2)
@@ -53,5 +52,5 @@ plt.plot(x, z_line, color='#ffb703', linestyle='--')
 plt.title('China\'s GDP - Linear Predicted Model')
 plt.legend(['Actual', 'Predicted'])
 plt.xlabel('Year')
-plt.ylabel('GDP')
+plt.ylabel('GDP (USD)')
 plt.show()
