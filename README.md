@@ -1,5 +1,5 @@
 
-# Emissions vs GDP
+# GDP & Emissions
 
 This report outlines the research performed by several students at Conestoga College to examine GDP, emissions, and their relationship. The report compared linear, exponential, and polynomial regression to determine which model most accurately demonstrated the relationship between GDP and CO2 emissions. The full PDF is found in the *report* folder.
 
