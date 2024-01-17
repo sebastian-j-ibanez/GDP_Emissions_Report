@@ -24,7 +24,7 @@ git clone ...
 cd Report
 pip install -r requirements.txt
 ```
-To run a model, enter the *models* folder and run the desired file. For example I wanted to use *correlation.py*:
+To generate a figure, enter the *models* folder and run the desired file. For example if I wanted to generate a correlation figure:
 
 ```bash
 cd models
